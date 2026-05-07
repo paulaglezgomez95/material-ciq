@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Material Qx · Cirugía Cardiaca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<style>
+:root {
+  --green: #1A8A6E;
+  --green-dark: #0F6A54;
+  --green-light: #E1F5EE;
+  --green-mid: #2DB896;
+  --red: #D94040;
+  --red-light: #FCEBEB;
+  --amber: #D97706;
+  --amber-light: #FEF3C7;
+  --bg: #F7F8FA;
+  --card: #FFFFFF;
+  --border: #E4E7EC;
+  --border-light: #F0F2F5;
+  --text: #111827;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; min-height: 100vh; }
+input, select, button, textarea { font-family: var(--font); }
+input[type=text], input[type=email], input[type=number], input[type=date], select {
+  height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0 10px; font-size: 14px; color: var(--text); background: var(--card); outline: none; width: 100%;
+}
+input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,138,110,.12); }
+
+/* Layout */
+.topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.logo-mark { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.logo-mark i { color: #fff; font-size: 17px; }
+.app-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.app-sub { font-size: 12px; color: var(--text-3); }
+.topbar-btns { display: flex; gap: 8px; }
+
+.main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; height: 36px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; white-space: nowrap; }
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-dark); }
+.btn-outline { background: var(--card); color: var(--text-2); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--bg); border-color: #ccc; }
+.btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #fca5a5; }
+.btn-danger:hover { background: #fee2e2; }
+.btn-icon { background: none; border: none; cursor: pointer; padding: 5px; color: var(--text-3); border-radius: var(--radius-sm); transition: all .15s; }
+.btn-icon:hover { background: var(--bg); color: var(--text); }
+.btn-icon.del:hover { color: var(--red); background: var(--red-light); }
+
+/* Metrics */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.metric-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 500; margin-bottom: 6px; }
+.metric-val { font-size: 26px; font-weight: 600; line-height: 1; }
+.metric-val.ok { color: var(--green); }
+.metric-val.warn { color: var(--amber); }
+.metric-val.danger { color: var(--red); }
+.metric-val.neutral { color: var(--text); }
+
+/* Controls */
+.controls-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.controls-row input[type=text] { flex: 1; min-width: 200px; }
+.controls-row select { width: 200px; }
+
+/* Filter tabs */
+.filter-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.ftab { padding: 5px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--card); font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); transition: all .15s; }
+.ftab.active { background: var(--green); color: #fff; border-color: transparent; }
+.ftab .count { display: inline-block; background: rgba(255,255,255,.25); border-radius: 99px; padding: 0 6px; font-size: 11px; margin-left: 4px; }
+.ftab:not(.active) .count { background: var(--bg); color: var(--text-3); }
+
+/* Table */
+.table-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: var(--bg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #FAFBFC; }
+.col-name { font-weight: 500; color: var(--text); }
+.col-ref { font-family: var(--mono); font-size: 12px; color: var(--text-3); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.badge-ok { background: var(--green-light); color: #0A6B52; }
+.badge-warn { background: var(--amber-light); color: #92400E; }
+.badge-danger { background: var(--red-light); color: #991B1B; }
+.badge-cat { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+
+/* Stock bar */
+.stock-wrap { display: flex; align-items: center; gap: 8px; }
+.stock-bar { width: 50px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; flex-shrink: 0; }
+.stock-fill { height: 100%; border-radius: 99px; }
+.stock-text { font-size: 13px; font-weight: 500; }
+.stock-min { font-size: 11px; color: var(--text-3); }
+
+/* Empty */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-3); }
+.empty-state i { font-size: 36px; display: block; margin-bottom: 10px; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,.4); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow-md); padding: 20px; width: 420px; max-width: 96vw; max-height: 92vh; overflow-y: auto; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-header h3 { font-size: 16px; font-weight: 600; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 5px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+
+/* Tabs inside modal */
+.modal-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.mtab { padding: 8px 14px; font-size: 13px; font-weight: 500; background: none; border: none; cursor: pointer; color: var(--text-3); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.mtab.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* Email tags */
+.email-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 32px; }
+.email-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); border: 1px solid #A7F3D0; color: #065F46; border-radius: 99px; padding: 4px 10px; font-size: 12px; font-weight: 500; }
+.email-tag button { background: none; border: none; cursor: pointer; color: #065F46; opacity: .6; font-size: 14px; line-height: 1; padding: 0; }
+.email-tag button:hover { opacity: 1; }
+
+/* Alert history */
+.alert-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-light); gap: 10px; }
+.alert-item:last-child { border-bottom: none; }
+.alert-name { font-weight: 500; font-size: 13px; }
+.alert-reason { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.alert-date { font-size: 11px; color: var(--text-3); white-space: nowrap; font-family: var(--mono); }
+
+/* Scanner */
+.scanner-box { border: 2px dashed var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg); text-align: center; min-height: 180px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; margin-bottom: 12px; position: relative; }
+#scanner-video { width: 100%; max-height: 220px; object-fit: cover; display: none; }
+.scan-placeholder { padding: 20px; }
+.scan-placeholder i { font-size: 40px; color: var(--text-3); display: block; margin-bottom: 8px; }
+.scan-result { font-size: 13px; font-weight: 600; color: var(--green); min-height: 20px; text-align: center; }
+
+/* Sync indicator */
+.sync-dot { width: 7px; height: 7px; border-radius: 99px; background: var(--green); display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+.sync-dot.offline { background: var(--amber); animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: #111827; color: #fff; padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; z-index: 999; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; max-width: 300px; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* Loading */
+.loading { text-align: center; padding: 40px; color: var(--text-3); }
+.spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 10px; }
+
+@media (max-width: 600px) {
+  .topbar { padding: 0 14px; }
+  .main { padding: 14px 12px; }
+  .app-sub { display: none; }
+  .controls-row select { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-mark"><i class="ti ti-heart-rate-monitor"></i></div>
+    <div>
+      <div class="app-name">Material Qx</div>
+      <div class="app-sub"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Conectando...</span></div>
+    </div>
+  </div>
+  <div class="topbar-btns">
+    <button class="btn btn-outline" onclick="openSettings()"><i class="ti ti-settings"></i> <span class="hide-sm">Ajustes</span></button>
+    <button class="btn btn-outline" onclick="openScanner()"><i class="ti ti-scan"></i> <span class="hide-sm">Escanear</span></button>
+    <button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Añadir</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="metrics" id="metrics">
+    <div class="metric-card"><div class="metric-label">Cargando</div><div class="spinner" style="margin-top:6px"></div></div>
+  </div>
+
+  <div class="controls-row">
+    <input type="text" id="search" placeholder="🔍  Buscar por nombre o referencia..." oninput="render()" />
+    <select id="filterCat" onchange="render()"><option value="">Todas las categorías</option></select>
+  </div>
+
+  <div class="filter-tabs" id="filter-tabs">
+    <button class="ftab active" onclick="setStatus('all',this)">Todos <span class="count" id="cnt-all">0</span></button>
+    <button class="ftab" onclick="setStatus('danger',this)">⚠️ Crítico <span class="count" id="cnt-danger">0</span></button>
+    <button class="ftab" onclick="setStatus('warn',this)">🟡 Atención <span class="count" id="cnt-warn">0</span></button>
+    <button class="ftab" onclick="setStatus('ok',this)">✅ OK <span class="count" id="cnt-ok">0</span></button>
+  </div>
+
+  <div class="section-label">Inventario</div>
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Material</th><th>Categoría</th><th>Referencia</th>
+            <th>Stock</th><th>Caducidad</th><th>Estado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7"><div class="loading"><div class="spinner"></div>Cargando datos...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal añadir/editar -->
+<div class="modal-overlay" id="modal-item">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Nuevo material</h3>
+      <button class="btn-icon" onclick="closeAll()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="field"><label>Nombre del material *</label><input type="text" id="f-nombre" placeholder="ej. Cánula aórtica 22Fr" /></div>
+    <div class="field"><label>Categoría</label>
+      <select id="f-cat">
+        <option>Cánulas</option><option>Cardioplejia</option><option>Balones BCIA</option>
+        <option>Válvulas aórticas</option><option>Válvulas mitrales biológicas</option>
+        <option>Válvulas mitrales mecánicas</option><option>Oxigenadores</option>
+        <option>Líneas y tubuladuras</option><option>Filtros</option>
+        <option>Suturas vasculares</option><option>Otro</option>
+      </select>
+    </div>
+    <div class="field"><label>Referencia / Lote</label><input type="text" id="f-ref" placeholder="ej. CAO-22FR-001" /></div>
+    <div class="field-row">
+      <div class="field"><label>Stock actual</label><input type="number" id="f-stock" min="0" value="1" /></div>
+      <div class="field"><label>Stock mínimo (alerta)</label><input type="number" id="f-min" min="0" value="2" /></div>
+    </div>
+    <div class="field"><label>Fecha de caducidad *</label><input type="date" id="f-cad" /></div>
+    <div class="field"><label>Proveedor</label><input type="text" id="f-proveedor" placeholder="ej. Terumo, Medtronic..." /></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAll()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveItem()"><i class="ti ti-device-floppy"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal escáner -->
+<div class="modal-overlay" id="modal-scanner">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="ti ti-scan" style="vertical-align:-2px;margin-right:6px"></i>Escanear código</h3>
+      <button class="btn-icon" onclick="stopScan()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="scanner-box">
+      <video id="scanner-video" autoplay playsinline></video>
+      <div class="scan-placeholder" id="scan-placeholder">
+        <i class="ti ti-camera"></i>
+        <div style="font-size:13px;color:var(--text-2)">Pulsa "Activar cámara" para escanear</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:4px">EAN-13 · Code 128 · Code 39 · QR · UDI</div>
+      </div>
+    </div>
+    <div class="scan-result" id="scan-result"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" style="flex:1" onclick="startScan()"><i class="ti ti-camera"></i> Activar cámara</button>
+      <button class="btn btn-outline" onclick="stopScan()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ajustes -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="ti ti-settings" style="vertical-align:-2px;margin-right:6px"></i>Ajustes</h3>
+      <button class="btn-icon" onclick="closeAll()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-tabs">
+      <button class="mtab active" onclick="switchTab('tab-emails',this)"><i class="ti ti-mail"></i> Correos</button>
+      <button class="mtab" onclick="switchTab('tab-history',this)"><i class="ti ti-history"></i> Historial</button>
+      <button class="mtab" onclick="switchTab('tab-info',this)"><i class="ti ti-info-circle"></i> Info</button>
+    </div>
+
+    <div id="tab-emails">
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Se notificará a estos correos cuando el stock baje del mínimo o un artículo esté próximo a caducar.</p>
+      <div class="email-list" id="email-tags"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input type="email" id="new-email" placeholder="nuevo@correo.com" style="flex:1" />
+        <button class="btn btn-primary" onclick="addEmail()"><i class="ti ti-plus"></i> Añadir</button>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)">
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="sendTestAlert()">
+          <i class="ti ti-send"></i> Enviar correo de prueba
+        </button>
+      </div>
+    </div>
+
+    <div id="tab-history" style="display:none">
+      <div id="alert-history-list"></div>
+    </div>
+
+    <div id="tab-info" style="display:none">
+      <div style="font-size:13px;color:var(--text-2);line-height:1.7">
+        <p><strong>Material Qx</strong> — App de gestión de material quirúrgico</p>
+        <p style="margin-top:8px">Unidad de Cirugía Cardiaca</p>
+        <p style="margin-top:12px;font-size:12px;color:var(--text-3)">Datos sincronizados en tiempo real con Firebase · Alertas via EmailJS · v2.0</p>
+      </div>
+    </div>
+
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeAll()">Cerrar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKC3gllypBsfnjKxckK9Ofmr9fV_hb7o",
+  authDomain: "material-qx.firebaseapp.com",
+  projectId: "material-qx",
+  storageBucket: "material-qx.firebasestorage.app",
+  messagingSenderId: "895694667462",
+  appId: "1:895694667462:web:2747ebf6e8575ad5ae61c7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// EmailJS
+const EMAILJS_SVC = 'service_034mfsb';
+const EMAILJS_TPL = 'template_w5l6jdn';
+const EMAILJS_KEY = 'v64WOvyQ4eKHsYwtG';
+
+let items = [];
+let emails = ['paula.glezgomez95@gmail.com','cristinafzapico@hotmail.com'];
+let alertHistory = [];
+let alertsSent = new Set();
+let editId = null;
+let statusFilter = 'all';
+let scanStream = null;
+let emailjsLoaded = false;
+
+// Load EmailJS
+const ejsScript = document.createElement('script');
+ejsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+ejsScript.onload = () => { window.emailjs.init(EMAILJS_KEY); emailjsLoaded = true; };
+document.head.appendChild(ejsScript);
+
+// Load Quagga
+const qScript = document.createElement('script');
+qScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js';
+document.head.appendChild(qScript);
+
+// Sync status
+function setSynced(ok) {
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  dot.className = 'sync-dot' + (ok ? '' : ' offline');
+  label.textContent = ok ? 'Sincronizado' : 'Sin conexión';
+}
+
+// Load config (emails, alerts) from Firestore
+async function loadConfig() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'main'));
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.emails) emails = d.emails;
+      if (d.alertHistory) alertHistory = d.alertHistory;
+      if (d.alertsSent) alertsSent = new Set(d.alertsSent);
+    }
+  } catch(e) {}
+}
+
+async function saveConfig() {
+  try {
+    await setDoc(doc(db, 'config', 'main'), { emails, alertHistory, alertsSent: [...alertsSent] });
+  } catch(e) {}
+}
+
+// Real-time listener for items
+function listenItems() {
+  onSnapshot(collection(db, 'material'), (snap) => {
+    items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setSynced(true);
+    render();
+    populateCatFilter();
+    checkAndSendAlerts();
+  }, () => setSynced(false));
+}
+
+// CRUD
+window.saveItem = async function() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const cad = document.getElementById('f-cad').value;
+  if (!nombre || !cad) { showToast('Nombre y fecha de caducidad son obligatorios', 'error'); return; }
+  const data = {
+    nombre,
+    cat: document.getElementById('f-cat').value,
+    ref: document.getElementById('f-ref').value.trim(),
+    stock: parseInt(document.getElementById('f-stock').value) || 0,
+    min: parseInt(document.getElementById('f-min').value) || 1,
+    cad,
+    proveedor: document.getElementById('f-proveedor').value.trim()
+  };
+  try {
+    if (editId) {
+      await updateDoc(doc(db, 'material', editId), data);
+      showToast('Material actualizado', 'success');
+    } else {
+      await addDoc(collection(db, 'material'), data);
+      showToast('Material añadido', 'success');
+    }
+    closeAll();
+  } catch(e) { showToast('Error al guardar', 'error'); }
+};
+
+window.deleteItem = async function(id) {
+  if (!confirm('¿Eliminar este material?')) return;
+  try {
+    await deleteDoc(doc(db, 'material', id));
+    showToast('Material eliminado');
+  } catch(e) { showToast('Error al eliminar', 'error'); }
+};
+
+window.editItem = function(id) {
+  const item = items.find(i => i.id === id);
+  if (item) openModal(item);
+};
+
+// Status helpers
+function getStatus(item) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((new Date(item.cad) - today) / 86400000);
+  if (diff < 0 || item.stock === 0) return 'danger';
+  if (diff <= 30 || item.stock < item.min) return 'warn';
+  return 'ok';
+}
+
+function statusLabel(item) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((new Date(item.cad) - today) / 86400000);
+  if (item.stock === 0) return { cls: 'badge-danger', txt: 'Sin stock' };
+  if (diff < 0) return { cls: 'badge-danger', txt: 'Caducado' };
+  if (diff === 0) return { cls: 'badge-danger', txt: 'Caduca hoy' };
+  if (diff <= 7) return { cls: 'badge-danger', txt: `Caduca en ${diff}d` };
+  if (diff <= 30 || item.stock < item.min) return { cls: 'badge-warn', txt: diff <= 30 ? `Caduca en ${diff}d` : 'Stock bajo' };
+  return { cls: 'badge-ok', txt: 'OK' };
+}
+
+// Render
+function renderMetrics() {
+  const danger = items.filter(i => getStatus(i) === 'danger').length;
+  const warn = items.filter(i => getStatus(i) === 'warn').length;
+  const ok = items.filter(i => getStatus(i) === 'ok').length;
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric-card"><div class="metric-label">Total artículos</div><div class="metric-val neutral">${items.length}</div></div>
+    <div class="metric-card"><div class="metric-label">Caducado / Sin stock</div><div class="metric-val ${danger>0?'danger':'ok'}">${danger}</div></div>
+    <div class="metric-card"><div class="metric-label">Próx. a caducar</div><div class="metric-val ${warn>0?'warn':'ok'}">${warn}</div></div>
+    <div class="metric-card"><div class="metric-label">En orden</div><div class="metric-val ok">${ok}</div></div>`;
+  document.getElementById('cnt-all').textContent = items.length;
+  document.getElementById('cnt-danger').textContent = danger;
+  document.getElementById('cnt-warn').textContent = warn;
+  document.getElementById('cnt-ok').textContent = ok;
+}
+
+function populateCatFilter() {
+  const sel = document.getElementById('filterCat');
+  const used = [...new Set(items.map(i => i.cat))].sort();
+  const curr = sel.value;
+  sel.innerHTML = '<option value="">Todas las categorías</option>' + used.map(c => `<option ${c===curr?'selected':''}>${c}</option>`).join('');
+}
+
+window.render = function() {
+  renderMetrics();
+  const q = document.getElementById('search').value.toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  let list = items.filter(i => {
+    const mq = !q || i.nombre.toLowerCase().includes(q) || (i.ref||'').toLowerCase().includes(q);
+    const mc = !cat || i.cat === cat;
+    const ms = statusFilter === 'all' || getStatus(i) === statusFilter;
+    return mq && mc && ms;
+  });
+  list.sort((a,b) => ({danger:0,warn:1,ok:2})[getStatus(a)] - ({danger:0,warn:1,ok:2})[getStatus(b)]);
+  const tbody = document.getElementById('tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ti ti-box-off"></i>Sin resultados</div></td></tr>`;
+    return;
+  }
+  const maxStock = Math.max(...items.map(i => i.stock), 1);
+  tbody.innerHTML = list.map(item => {
+    const sl = statusLabel(item);
+    const pct = Math.min(100, Math.round(item.stock / maxStock * 100));
+    const fill = item.stock === 0 ? '#D94040' : item.stock < item.min ? '#D97706' : '#1A8A6E';
+    const cadFmt = new Date(item.cad).toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit',year:'numeric'});
+    return `<tr>
+      <td class="col-name">${item.nombre}${item.proveedor?`<div style="font-size:11px;color:var(--text-3);font-weight:400">${item.proveedor}</div>`:''}</td>
+      <td><span class="badge badge-cat">${item.cat}</span></td>
+      <td class="col-ref">${item.ref||'—'}</td>
+      <td><div class="stock-wrap"><div class="stock-bar"><div class="stock-fill" style="width:${pct}%;background:${fill}"></div></div><span class="stock-text">${item.stock}</span><span class="stock-min">/ mín ${item.min}</span></div></td>
+      <td style="white-space:nowrap;font-size:13px">${cadFmt}</td>
+      <td><span class="badge ${sl.cls}">${sl.txt}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn-icon" onclick="editItem('${item.id}')" title="Editar"><i class="ti ti-edit"></i></button>
+        <button class="btn-icon del" onclick="deleteItem('${item.id}')" title="Eliminar"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
+  }).join('');
+};
+
+window.setStatus = function(s, btn) {
+  statusFilter = s;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+};
+
+// Modal
+window.openModal = function(item) {
+  editId = item ? item.id : null;
+  document.getElementById('modal-title').textContent = item ? 'Editar material' : 'Nuevo material';
+  document.getElementById('f-nombre').value = item ? item.nombre : '';
+  document.getElementById('f-cat').value = item ? item.cat : 'Cánulas';
+  document.getElementById('f-ref').value = item ? (item.ref||'') : '';
+  document.getElementById('f-stock').value = item ? item.stock : 1;
+  document.getElementById('f-min').value = item ? item.min : 2;
+  document.getElementById('f-cad').value = item ? item.cad : '';
+  document.getElementById('f-proveedor').value = item ? (item.proveedor||'') : '';
+  document.getElementById('modal-item').classList.add('open');
+};
+
+window.closeAll = function() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  stopScan();
+};
+
+// Settings
+window.openSettings = function() {
+  renderEmailTags();
+  renderAlertHistory();
+  document.getElementById('modal-settings').classList.add('open');
+};
+
+function renderEmailTags() {
+  document.getElementById('email-tags').innerHTML = emails.map((e,i) =>
+    `<span class="email-tag"><i class="ti ti-mail" style="font-size:12px"></i>${e}<button onclick="removeEmail(${i})">×</button></span>`
+  ).join('');
+}
+
+window.addEmail = function() {
+  const inp = document.getElementById('new-email');
+  const val = inp.value.trim().toLowerCase();
+  if (!val || !/^[^@]+@[^@]+\.[^@]+$/.test(val)) { showToast('Introduce un correo válido', 'error'); return; }
+  if (emails.includes(val)) { showToast('Este correo ya está en la lista', 'error'); return; }
+  emails.push(val); inp.value = '';
+  saveConfig(); renderEmailTags(); showToast('Correo añadido', 'success');
+};
+
+window.removeEmail = function(i) {
+  if (emails.length <= 1) { showToast('Debe haber al menos un correo', 'error'); return; }
+  emails.splice(i, 1); saveConfig(); renderEmailTags();
+};
+
+function renderAlertHistory() {
+  const el = document.getElementById('alert-history-list');
+  if (!alertHistory.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text-3);padding:12px 0">No hay alertas enviadas todavía.</p>'; return; }
+  el.innerHTML = [...alertHistory].reverse().slice(0,25).map(a =>
+    `<div class="alert-item"><div><div class="alert-name">${a.material}</div><div class="alert-reason">${a.motivo}</div></div><div class="alert-date">${a.fecha}</div></div>`
+  ).join('');
+}
+
+window.switchTab = function(tabId, btn) {
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['tab-emails','tab-history','tab-info'].forEach(id => {
+    document.getElementById(id).style.display = id === tabId ? 'block' : 'none';
+  });
+  if (tabId === 'tab-history') renderAlertHistory();
+};
+
+// Email alerts
+async function sendEmailAlert(item, motivo) {
+  if (!emailjsLoaded) return;
+  const cad = new Date(item.cad).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  for (const email of emails) {
+    try {
+      await window.emailjs.send(EMAILJS_SVC, EMAILJS_TPL, {
+        to_email: email, material: item.nombre, categoria: item.cat,
+        referencia: item.ref||'—', stock: item.stock, minimo: item.min,
+        caducidad: cad, estado: statusLabel(item).txt
+      }, EMAILJS_KEY);
+    } catch(e) { console.error('EmailJS:', e); }
+  }
+  alertHistory.push({ material: item.nombre, motivo, fecha: new Date().toLocaleString('es-ES') });
+  saveConfig();
+}
+
+function checkAndSendAlerts() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayKey = today.toISOString().split('T')[0];
+  items.forEach(item => {
+    const s = getStatus(item);
+    if (s === 'ok') return;
+    const key = `${item.id}-${todayKey}-${s}`;
+    if (alertsSent.has(key)) return;
+    const diff = Math.round((new Date(item.cad) - today) / 86400000);
+    let motivo = '';
+    if (item.stock === 0) motivo = 'Sin stock';
+    else if (diff < 0) motivo = 'Material caducado';
+    else if (diff <= 7) motivo = `Caduca en ${diff} día(s)`;
+    else if (diff <= 30) motivo = `Caduca en ${diff} días`;
+    else if (item.stock < item.min) motivo = 'Stock por debajo del mínimo';
+    if (motivo) { alertsSent.add(key); sendEmailAlert(item, motivo); saveConfig(); }
+  });
+}
+
+window.sendTestAlert = async function() {
+  if (!items.length) { showToast('No hay material en el inventario', 'error'); return; }
+  showToast('Enviando correo de prueba...');
+  await sendEmailAlert(items[0], 'Correo de prueba desde Material Qx');
+  showToast('Correo enviado a ' + emails.join(', '), 'success');
+  renderAlertHistory();
+};
+
+// Scanner
+window.openScanner = function() { document.getElementById('modal-scanner').classList.add('open'); };
+
+window.startScan = function() {
+  const video = document.getElementById('scanner-video');
+  const ph = document.getElementById('scan-placeholder');
+  document.getElementById('scan-result').textContent = '';
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream => {
+    scanStream = stream; video.srcObject = stream; video.style.display = 'block'; ph.style.display = 'none';
+    if (typeof Quagga !== 'undefined') {
+      Quagga.init({inputStream:{type:'LiveStream',target:video,constraints:{facingMode:'environment'}},
+        decoder:{readers:['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader']}}, err => {
+        if (!err) Quagga.start();
+      });
+      Quagga.onDetected(result => {
+        const code = result.codeResult.code;
+        document.getElementById('scan-result').textContent = '✅ Código: ' + code;
+        stopScan();
+        const existing = items.find(i => i.ref === code);
+        if (existing) { openModal(existing); showToast('Material encontrado: ' + existing.nombre, 'success'); }
+        else { setTimeout(() => { openModal(null); document.getElementById('f-ref').value = code; }, 300); }
+      });
+    }
+  }).catch(() => showToast('No se pudo acceder a la cámara', 'error'));
+};
+
+window.stopScan = function() {
+  if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+  if (typeof Quagga !== 'undefined') { try { Quagga.stop(); } catch(e) {} }
+  const video = document.getElementById('scanner-video');
+  video.style.display = 'none';
+  document.getElementById('scan-placeholder').style.display = 'block';
+  document.getElementById('modal-scanner').classList.remove('open');
+};
+
+// Toast
+window.showToast = function(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (type?' '+type:'');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+};
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', function(e) { if (e.target === this) closeAll(); }));
+
+// Init
+await loadConfig();
+listenItems();
+</script>
+</body>
+</html>
