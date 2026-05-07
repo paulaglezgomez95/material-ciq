@@ -62,6 +62,12 @@ input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rg
 .btn-icon { background: none; border: none; cursor: pointer; padding: 5px; color: var(--text-3); border-radius: var(--radius-sm); transition: all .15s; }
 .btn-icon:hover { background: var(--bg); color: var(--text); }
 .btn-icon.del:hover { color: var(--red); background: var(--red-light); }
+.stock-controls { display: flex; align-items: center; gap: 4px; }
+.btn-stock { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-size: 15px; font-weight: 600; color: var(--text-2); display: flex; align-items: center; justify-content: center; line-height: 1; transition: all .15s; padding: 0; }
+.btn-stock:hover { background: var(--bg); border-color: #ccc; color: var(--text); }
+.btn-stock.minus:hover { background: var(--red-light); border-color: #fca5a5; color: var(--red); }
+.btn-stock.plus:hover { background: var(--green-light); border-color: #6ee7b7; color: var(--green); }
+.btn-stock:disabled { opacity: .35; cursor: not-allowed; }
 
 /* Metrics */
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -515,7 +521,7 @@ window.render = function() {
       <td class="col-name">${item.nombre}${item.proveedor?`<div style="font-size:11px;color:var(--text-3);font-weight:400">${item.proveedor}</div>`:''}</td>
       <td><span class="badge badge-cat">${item.cat}</span></td>
       <td class="col-ref">${item.ref||'—'}</td>
-      <td><div class="stock-wrap"><div class="stock-bar"><div class="stock-fill" style="width:${pct}%;background:${fill}"></div></div><span class="stock-text">${item.stock}</span><span class="stock-min">/ mín ${item.min}</span></div></td>
+      <td><div class="stock-wrap"><div class="stock-bar"><div class="stock-fill" style="width:${pct}%;background:${fill}"></div></div><div class="stock-controls"><button class="btn-stock minus" onclick="changeStock('${item.id}',-1)" ${item.stock<=0?'disabled':''} title="Quitar una unidad">−</button><span class="stock-text" style="min-width:24px;text-align:center">${item.stock}</span><button class="btn-stock plus" onclick="changeStock('${item.id}',1)" title="Añadir una unidad">+</button></div><span class="stock-min">mín ${item.min}</span></div></td>
       <td style="white-space:nowrap;font-size:13px">${cadFmt}</td>
       <td><span class="badge ${sl.cls}">${sl.txt}</span></td>
       <td style="white-space:nowrap">
@@ -523,6 +529,19 @@ window.render = function() {
         <button class="btn-icon del" onclick="deleteItem('${item.id}')" title="Eliminar"><i class="ti ti-trash"></i></button>
       </td></tr>`;
   }).join('');
+};
+
+
+window.changeStock = async function(id, delta) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  const newStock = Math.max(0, item.stock + delta);
+  if (newStock === item.stock) return;
+  try {
+    await updateDoc(doc(db, 'material', id), { stock: newStock });
+    if (delta < 0) showToast('Stock actualizado: ' + newStock + ' uds', newStock < item.min ? 'error' : '');
+    else showToast('Stock actualizado: ' + newStock + ' uds', 'success');
+  } catch(e) { showToast('Error al actualizar stock', 'error'); }
 };
 
 window.setStatus = function(s, btn) {
