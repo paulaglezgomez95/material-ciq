@@ -256,7 +256,7 @@ tbody tr:hover td { background: #FAFBFC; }
       <div class="field"><label>Stock actual</label><input type="number" id="f-stock" min="0" value="1" /></div>
       <div class="field"><label>Stock mínimo (alerta)</label><input type="number" id="f-min" min="0" value="2" /></div>
     </div>
-    <div class="field"><label>Fecha de caducidad *</label><input type="date" id="f-cad" /></div>
+    <div class="field"><label>Fecha de caducidad</label><input type="date" id="f-cad" /></div>
     <div class="field"><label>Proveedor</label><input type="text" id="f-proveedor" placeholder="ej. Terumo, Medtronic..." /></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeAll()">Cancelar</button>
@@ -431,7 +431,7 @@ function listenItems() {
 window.saveItem = async function() {
   const nombre = document.getElementById('f-nombre').value.trim();
   const cad = document.getElementById('f-cad').value;
-  if (!nombre || !cad) { showToast('Nombre y fecha de caducidad son obligatorios', 'error'); return; }
+  if (!nombre) { showToast('El nombre del material es obligatorio', 'error'); return; }
   const data = {
     nombre,
     cat: document.getElementById('f-cat').value,
