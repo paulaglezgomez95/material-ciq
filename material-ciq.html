@@ -647,7 +647,10 @@ async function sendEmailAlert(item, motivo) {
  
 async function checkAndSendAlerts() {
   const today = new Date(); today.setHours(0,0,0,0);
-  const todayKey = today.toISOString().split('T')[0];
+  // Clave semanal: año + número de semana del año
+  const onejan = new Date(today.getFullYear(), 0, 1);
+  const weekNum = Math.ceil((((today - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+  const todayKey = `${today.getFullYear()}-W${weekNum}`;
   for (const item of items) {
     const s = getStatus(item);
     if (s === 'ok') continue;
